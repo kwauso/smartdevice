@@ -24,7 +24,7 @@ public sealed class Game : GameBase
     /// </summary>
     public override void InitGame()
     {
-        resetValue(); // 初期化処理をまとめた関数を呼ぶ
+        resetValue(); // ← 初期化処理をまとめた関数を呼ぶ
     }
 
     /// <summary>
@@ -44,10 +44,12 @@ public sealed class Game : GameBase
 
             card_count[new_card]++;
 
-            isComplete = true;
-            for (int i = 0; i < CARD_TYPE; i++) {
-                if (card_count[i] == 0) {
-                    isComplete = false;
+            // ★ Completeの判定を変更
+            isComplete = false;
+            for (int i = 0; i < 5; i++) { // A〜Eのカードをチェック
+                if (card_count[i] >= 5) {
+                    isComplete = true;
+                    break; // 1枚でも5枚以上揃ったら、Complete判定をtrueにして終了
                 }
             }
         }
