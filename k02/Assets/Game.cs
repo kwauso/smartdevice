@@ -34,9 +34,16 @@ public sealed class Game : GameBase
     {
         if (gc.GetPointerFrameCount(0) == 1 && !isComplete) {
             money -= 100;
-            new_card = gc.Random(0, 9);
+
+            // 出現確率の調整
+            if (gc.Random(0, 99) < 25) { // 25%の確率
+                new_card = gc.Random(0, 4); // A〜Eは5％
+            } else {
+                new_card = gc.Random(5, 9); // F〜Jは15％
+            }
+
             card_count[new_card]++;
-            
+
             isComplete = true;
             for (int i = 0; i < CARD_TYPE; i++) {
                 if (card_count[i] == 0) {
