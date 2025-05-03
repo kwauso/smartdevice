@@ -136,10 +136,10 @@ public sealed class Game : GameBase
     /// </summary>
     public override void DrawGame()
     {
-        // 画面を白で塗りつぶします
+        // 画面を白で塗りつぶす
         gc.ClearScreen();
 
-        // 青空の画像を描画します
+        // 青空の画像を描画
         gc.DrawImage(GcImage.BlueSky, 0, 0);
 
         // ボールを描画
@@ -161,12 +161,12 @@ public sealed class Game : GameBase
 
         // 経過時間の表示
         gc.SetColor(0, 0, 0);
-        gc.DrawString($"Time: {time}フレーム", 10, 440);
+        gc.DrawString($"Time: {time}", 10, 440);
 
         // ブロックが全て消えたらクリア表示
         if (countBlock() == 0)
         {
-            gc.SetColor(0, 200, 0);
+            gc.SetColor(0, 0, 0);
             gc.DrawString("Clear!", 270, 200);
         }
     }
