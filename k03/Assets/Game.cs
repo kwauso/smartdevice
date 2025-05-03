@@ -16,7 +16,7 @@ public sealed class Game : GameBase
     int ball_speed_x;
     int ball_speed_y;
 
-    // ラケットの変数を追加
+    // ラケット用の変数を追加
     int player_x;
     int player_y;
     int player_w;
@@ -46,35 +46,51 @@ public sealed class Game : GameBase
     /// </summary>
     public override void UpdateGame()
     {
-        // ボールの移動
-        ball_x += ball_speed_x;
-        ball_y += ball_speed_y;
+        // 起動からの経過時間を取得します
+        ball_x = ball_x + ball_speed_x;
+        ball_y = ball_y + ball_speed_y;
 
+        // 左端で跳ね返る
         if (ball_x < 0)
         {
             ball_x = 0;
             ball_speed_x = -ball_speed_x;
         }
 
+        // 上端で跳ね返る
         if (ball_y < 0)
         {
             ball_y = 0;
             ball_speed_y = -ball_speed_y;
         }
 
+        // 右端で跳ね返る
         if (ball_x > 616)
         {
             ball_x = 616;
             ball_speed_x = -ball_speed_x;
         }
 
-        if (ball_y > 456)
+        // ラケットとの当たり判定（ボールのサイズは24x24）
+        if (gc.CheckHitRect(ball_x, ball_y, 24, 24, player_x, player_y, player_w, player_h))
         {
-            ball_y = 456;
-            ball_speed_y = -ball_speed_y;
+            // ボールが下に動いているときのみ跳ね返す
+            if (ball_speed_y > 0)
+            {
+                ball_speed_y = -ball_speed_y;
+            }
         }
 
-        // タップ位置でラケットを左右に移動
+        // 画面下に落ちたらボールを消す（動かなくする）
+        if (ball_y > 480)
+        {
+            ball_speed_x = 0;
+            ball_speed_y = 0;
+            ball_x = -100; // 画面外に移動
+            ball_y = -100;
+        }
+
+        // タップ位置に応じてラケットを移動
         if (gc.GetPointerFrameCount(0) > 0)
         {
             player_x = (int)gc.GetPointerX(0) - player_w / 2;
@@ -86,15 +102,17 @@ public sealed class Game : GameBase
     /// </summary>
     public override void DrawGame()
     {
-        // 背景描画
+        // 画面を白で塗りつぶす
         gc.ClearScreen();
+
+        // 青空の画像を描画
         gc.DrawImage(GcImage.BlueSky, 0, 0);
 
         // ボールの描画
         gc.DrawImage(GcImage.BallYellow, ball_x, ball_y);
 
         // ラケットの描画
-        gc.SetColor(0, 0, 255); // 青色
+        gc.SetColor(0, 0, 255);
         gc.FillRect(player_x, player_y, player_w, player_h);
     }
 }
