@@ -16,6 +16,12 @@ public sealed class Game : GameBase
     int ball_speed_x;
     int ball_speed_y;
 
+    // ラケットの変数を追加
+    int player_x;
+    int player_y;
+    int player_w;
+    int player_h;
+
     /// <summary>
     /// 初期化処理
     /// </summary>
@@ -27,6 +33,12 @@ public sealed class Game : GameBase
         ball_y = 0;
         ball_speed_x = 3;
         ball_speed_y = 3;
+
+        // ラケットの初期化
+        player_x = 270;
+        player_y = 460;
+        player_w = 100;
+        player_h = 20;
     }
 
     /// <summary>
@@ -34,28 +46,38 @@ public sealed class Game : GameBase
     /// </summary>
     public override void UpdateGame()
     {
-        // 起動からの経過時間を取得します
-        ball_x = ball_x + ball_speed_x;
-        ball_y = ball_y + ball_speed_y;
+        // ボールの移動
+        ball_x += ball_speed_x;
+        ball_y += ball_speed_y;
 
-        if( ball_x < 0 ) {
-        ball_x = 0;
-        ball_speed_x = -ball_speed_x;
+        if (ball_x < 0)
+        {
+            ball_x = 0;
+            ball_speed_x = -ball_speed_x;
         }
 
-        if( ball_y < 0 ) {
-        ball_y = 0;
-        ball_speed_y = -ball_speed_y;
+        if (ball_y < 0)
+        {
+            ball_y = 0;
+            ball_speed_y = -ball_speed_y;
         }
 
-        if( ball_x > 616 ) {
-        ball_x = 616;
-        ball_speed_x = -ball_speed_x;
+        if (ball_x > 616)
+        {
+            ball_x = 616;
+            ball_speed_x = -ball_speed_x;
         }
 
-        if( ball_y > 456 ) {
-        ball_y = 456;
-        ball_speed_y = -ball_speed_y;
+        if (ball_y > 456)
+        {
+            ball_y = 456;
+            ball_speed_y = -ball_speed_y;
+        }
+
+        // タップ位置でラケットを左右に移動
+        if (gc.GetPointerFrameCount(0) > 0)
+        {
+            player_x = (int)gc.GetPointerX(0) - player_w / 2;
         }
     }
 
@@ -64,15 +86,15 @@ public sealed class Game : GameBase
     /// </summary>
     public override void DrawGame()
     {
-        // 画面を白で塗りつぶします
+        // 背景描画
         gc.ClearScreen();
-
-        // 青空の画像を描画します
-        gc.ClearScreen();
-
-        // 0番の画像を描画します
         gc.DrawImage(GcImage.BlueSky, 0, 0);
 
-	    gc.DrawImage(GcImage.BallYellow,ball_x,ball_y);
+        // ボールの描画
+        gc.DrawImage(GcImage.BallYellow, ball_x, ball_y);
+
+        // ラケットの描画
+        gc.SetColor(0, 0, 255); // 青色
+        gc.FillRect(player_x, player_y, player_w, player_h);
     }
 }
