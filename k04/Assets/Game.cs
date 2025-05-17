@@ -22,6 +22,9 @@ public sealed class Game : GameBase
     int player_h = 32;
     GcImage player_img = GcImage.GR0;
 
+    int score = 0;
+    int time = 1800;
+
     public override void InitGame()
     {
         gc.SetResolution(640, 480);
@@ -33,11 +36,25 @@ public sealed class Game : GameBase
 
     public override void UpdateGame()
     {
+        if (time > 0)
+        {
+            time--;
+        }
+
         for(int i = 0; i < BALL_NUM; i++)
         {
-            ball_y[i] = ball_y[i] + ball_speed[i];
+            ball_y[i] += ball_speed[i];
             if(ball_y[i] > 480)
             {
+                resetBall(i);
+            }
+
+            if (gc.CheckHitRect(ball_x[i], ball_y[i], ball_w, ball_h, player_x, player_y, player_w, player_h))
+            {
+                if (time > 0)
+                {
+                    score += ball_col[i];
+                }
                 resetBall(i);
             }
         }
@@ -45,7 +62,6 @@ public sealed class Game : GameBase
         if(gc.GetPointerFrameCount(0) > 0)
         {
             var px = gc.GetPointerX(0);
-
             if(px > 320)
             {
                 player_x += player_speed;
@@ -69,6 +85,17 @@ public sealed class Game : GameBase
         }
 
         gc.DrawImage(player_img, player_x, player_y);
+
+        gc.SetColor(0, 0, 0);
+        if (time > 0)
+        {
+            gc.DrawString("time:" + time, 0, 0);
+        }
+        else
+        {
+            gc.DrawString("finished!!", 0, 0);
+        }
+        gc.DrawString("score:" + score, 0, 24);
     }
 
     void resetBall(int id)
