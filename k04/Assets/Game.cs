@@ -11,7 +11,14 @@ using UnityEngine.InputSystem;
 public sealed class Game : GameBase
 {
     // 変数の宣言
-    int sec = 0;
+    const int BALL_NUM = 30;
+    int[] ball_x = new int [BALL_NUM];
+    int[] ball_y = new int [BALL_NUM];
+    int[] ball_col = new int [BALL_NUM];
+    int[] ball_speed = new int [BALL_NUM];
+    GcImage[] ball_img = new GcImage [BALL_NUM];
+    int ball_w = 24;
+    int ball_h = 24;
 
     /// <summary>
     /// 初期化処理
@@ -19,7 +26,11 @@ public sealed class Game : GameBase
     public override void InitGame()
     {
         // キャンバスの大きさを設定します
-        gc.ChangeCanvasSize(720, 1280);
+        gc.SetResolution(640, 480);
+        for(int i =0 ; i < BALL_NUM ; i ++ )
+        {
+        resetBall(i);
+        }
     }
 
     /// <summary>
@@ -28,7 +39,13 @@ public sealed class Game : GameBase
     public override void UpdateGame()
     {
         // 起動からの経過時間を取得します
-        sec = (int)gc.TimeSinceStartup;
+        for(int i =0 ; i < BALL_NUM ; i ++ )
+        {
+        ball_y[i] = ball_y[i] + ball_speed[i];
+        if(ball_y[i]> 480){
+            resetBall(i);
+        }
+        }
     }
 
     /// <summary>
@@ -36,19 +53,26 @@ public sealed class Game : GameBase
     /// </summary>
     public override void DrawGame()
     {
-        // 画面を白で塗りつぶします
         gc.ClearScreen();
 
-        // 青空の画像を描画します
-        gc.DrawImage(GcImage.BlueSky, 0, 0);
+        for(int i =0 ; i < BALL_NUM ; i ++ ){
+            gc.DrawImage(ball_img[i],ball_x[i],ball_y[i]);
+        }
+    }
 
-        // 黒の文字を描画します
-        gc.SetColor(0, 0, 0);
-        gc.SetFontSize(48);
-        gc.SetStringAnchor(GcAnchor.UpperLeft);
-        gc.DrawString("この文字と青空の画像が", 40, 160);
-        gc.DrawString("見えていれば成功です", 40, 270);
-        gc.SetStringAnchor(GcAnchor.UpperRight);
-        gc.DrawString($"{sec}s", 630, 10);
+    void resetBall(int id){
+        ball_x[id] = gc.Random(0,616);
+        ball_y[id] = -gc.Random(24,480);
+        ball_speed[id] = gc.Random(3,6);
+        ball_col[id] = gc.Random(1,3);
+        if(ball_col[id]==1){
+            ball_img[id] = GcImage.BallYellow;
+        }
+        else if(ball_col[id]==2){
+            ball_img[id] = GcImage.BallRed;
+        }
+        else {
+            ball_img[id] = GcImage.BallBlue; 
+        }
     }
 }
