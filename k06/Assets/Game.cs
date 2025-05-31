@@ -11,7 +11,8 @@ using UnityEngine.InputSystem;
 public sealed class Game : GameBase
 {
     // 変数の宣言
-    int sec = 0;
+    int time = 600;
+    int score = 0;
 
     /// <summary>
     /// 初期化処理
@@ -19,7 +20,8 @@ public sealed class Game : GameBase
     public override void InitGame()
     {
         // キャンバスの大きさを設定します
-        gc.ChangeCanvasSize(720, 1280);
+        gc.SetResolution(720,1280);
+        gc.IsAccelerometerEnabled = true;
     }
 
     /// <summary>
@@ -28,7 +30,18 @@ public sealed class Game : GameBase
     public override void UpdateGame()
     {
         // 起動からの経過時間を取得します
-        sec = (int)gc.TimeSinceStartup;
+        time = time - 1;
+        for(int i=0 ; i< gc.PointerCount ; i++){
+        if(gc.GetPointerFrameCount(i)==1){
+            if(time >= 0){
+            score = score + 1;
+            }
+        }
+        }
+        if(gc.GetPointerDuration(0) >= 2.0f && time < -120){
+            time =600;
+            score =0;
+        }
     }
 
     /// <summary>
@@ -38,17 +51,10 @@ public sealed class Game : GameBase
     {
         // 画面を白で塗りつぶします
         gc.ClearScreen();
-
-        // 青空の画像を描画します
-        gc.DrawImage(GcImage.BlueSky, 0, 0);
-
-        // 黒の文字を描画します
         gc.SetColor(0, 0, 0);
-        gc.SetFontSize(48);
-        gc.SetStringAnchor(GcAnchor.UpperLeft);
-        gc.DrawString("この文字と青空の画像が", 40, 160);
-        gc.DrawString("見えていれば成功です", 40, 270);
-        gc.SetStringAnchor(GcAnchor.UpperRight);
-        gc.DrawString($"{sec}s", 630, 10);
+        gc.SetFontSize(36);
+        gc.DrawString("AcceX:"+gc.AccelerationLastX,0,0);
+        gc.DrawString("AcceY:"+gc.AccelerationLastY,0,40);
+        gc.DrawString("AcceZ:"+gc.AccelerationLastZ,0,80);
     }
 }
